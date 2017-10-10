@@ -8,23 +8,11 @@
 #ifndef GPIO_H_
 #define GPIO_H_
 
-
 #include "DataTypeDefinitions.h"
+#include "MK64F12.h"
 
-
+/** Constant that represent an error */
 #define ERROR 0x02
-
-
-typedef struct
-{
-	uint8 flagPortA : 1;
-	uint8 flagPortB : 1;
-	uint8 flagPortC : 1;
-	uint8 flagPortD : 1;
-	uint8 flagPortE : 1;
-} GPIO_interruptFlags_t;
-
-
 
 /** Constant that represent the clock enable for GPIO A */
 #define GPIO_CLOCK_GATING_PORTA 0x00000200
@@ -82,8 +70,6 @@ typedef struct
 #define INTR_LOGIC1        0x000C0000
 
 
-
-
 /*! This definition is used to configure whether a pin is an input or an output*/
 typedef enum {GPIO_INPUT,/*!< Definition to configure a pin as input */
 			  GPIO_OUTPUT /*!< Definition to configure a pin as output */
@@ -100,11 +86,59 @@ typedef enum{GPIO_A, /*!< Definition to select GPIO A */
 /*! This data type is used to configure the pin control register*/
 typedef const uint32 GPIO_pinControlRegisterType;
 
+/*! This definition is used to store the value of the flags of each port*/
+typedef struct
+{
+	uint8 flagPortA : 1;
+	uint8 flagPortB : 1;
+	uint8 flagPortC : 1;
+	uint8 flagPortD : 1;
+	uint8 flagPortE : 1;
+} GPIO_interruptFlags_t;
 
+/** Constant that represent the interruption enable */
+void NVIC_EnableIRQ	(IRQn_Type 	IRQn);
 
+void GPIO_clearFC();
 
+uint8 GPIO_getFC();
+/********************************************************************************************/
+/********************************************************************************************/
+/********************************************************************************************/
+/*!
+ 	\brief	 This function handles the interruption of port C.
 
+ 	 \return void
+ */
+void PORTC_IRQHandler();
+/********************************************************************************************/
+/********************************************************************************************/
+/********************************************************************************************/
+/*!
+ 	 \brief	 This function handles the interruption of port A.
+
+ 	 \return void
+ */
+void PORTA_IRQHandler();
+/********************************************************************************************/
+/********************************************************************************************/
+/********************************************************************************************/
+/*!
+ 	 \brief	 This function clears the interruption flag of a port.
+
+ 	 \param[in]  gpio Port to clear interrupt flag.
+ 	 \return 1 if there were no mistakes.
+ */
 uint8 GPIO_clearIRQStatus(GPIO_portNameType gpio);
+/********************************************************************************************/
+/********************************************************************************************/
+/********************************************************************************************/
+/*!
+ 	 \brief	 This function clears all interrupts that were sensed by the GPIO.
+
+ 	 \param[in]  portName Port to get status of interruption flag.
+ 	 \return the interruption flag of the port gpio.
+ */
 uint8 GPIO_getIRQStatus(GPIO_portNameType gpio);
 
 
@@ -117,7 +151,6 @@ uint8 GPIO_getIRQStatus(GPIO_portNameType gpio);
 
  	 \param[in]  portName Port to clear interrupts.
  	 \return void
- 	 \todo Implement a mechanism to clear interrupts by a specific pin.
  */
 void GPIO_clearInterrupt(GPIO_portNameType portName);
 
@@ -129,7 +162,6 @@ void GPIO_clearInterrupt(GPIO_portNameType portName);
 
  	 \param[in]  portName Port to clear interrupts.
  	 \return void
- 	 \todo Implement a mechanism to clear interrupts by a specific pin.
  */
 void GPIO_clearInterrupt(GPIO_portNameType portName);
 

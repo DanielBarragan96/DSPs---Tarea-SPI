@@ -13,20 +13,30 @@
 #include "GPIO.h"
 
 static GPIO_interruptFlags_t GPIO_intrStatusFlag;
-
-void PORTC_IRQHandler()
+/**flag created to be able to switch states of the motor*/
+static uint8 flag_c = FALSE;
+/**function to clear flag value*/
+void GPIO_clearFC()
 {
-	GPIO_intrStatusFlag.flagPortC = TRUE;
-	GPIO_clearInterrupt(GPIO_C);
-
+	flag_c = FALSE;
+}
+/**returns the value of flag*/
+uint8 GPIO_getFC()
+{
+	return flag_c;
 }
 
+/**handler para la interruption del puerto c*/
+void PORTC_IRQHandler(){
+	flag_c = TRUE;
+	GPIO_intrStatusFlag.flagPortC = TRUE;
+	GPIO_clearInterrupt(GPIO_C);
+}
 
-void PORTA_IRQHandler()
-{
+/**handler para la interruption del puerto a*/
+void PORTA_IRQHandler(){
 	GPIO_intrStatusFlag.flagPortA  = TRUE;
 	GPIO_clearInterrupt(GPIO_A);
-
 }
 
 uint8 GPIO_getIRQStatus(GPIO_portNameType gpio)
@@ -76,9 +86,7 @@ uint8 GPIO_clearIRQStatus(GPIO_portNameType gpio)
 			return(ERROR);
 			break;
 	}
-
 	return(TRUE);
-
 }
 
 
@@ -101,9 +109,9 @@ void GPIO_clearInterrupt(GPIO_portNameType portName)
 		default: /** GPIO E is selected*/
 			PORTE->ISFR=0xFFFFFFFF;
 			break;
-
 	}// end switch
 }
+
 uint8 GPIO_clockGating(GPIO_portNameType portName)
 {
 	switch(portName)/** Selecting the GPIO for clock enabling*/
@@ -132,8 +140,6 @@ uint8 GPIO_clockGating(GPIO_portNameType portName)
 
 uint8 GPIO_pinControlRegister(GPIO_portNameType portName,uint8 pin,const GPIO_pinControlRegisterType*  pinControlRegister)
 {
-	//**Todas las variables de configuración del sistema deben de ser constantes, al usar const "quiero que esta variable la pongas en memoria de programa, no en RAM"**//
-
 	switch(portName)
 		{
 		case GPIO_A:/** GPIO A is selected*/
@@ -197,12 +203,7 @@ uint32 GPIO_readPORT(GPIO_portNameType portName){
 	}
 }
 
-
-
-
-
 uint8 GPIO_readPIN(GPIO_portNameType portName, uint8 pin){
-
 	switch(portName)
 			{
 			case GPIO_A:/** GPIO A is selected*/
@@ -222,14 +223,10 @@ uint8 GPIO_readPIN(GPIO_portNameType portName, uint8 pin){
 			default:
 				return FALSE;
 				break;
-
 			}
-
 }
 
-void GPIO_setPIN(GPIO_portNameType portName, uint8 pin)
-{
-
+void GPIO_setPIN(GPIO_portNameType portName, uint8 pin){
 	switch(portName){
 		case GPIO_A:
 		GPIOA->PSOR = (GPIOA->PDOR | (0x1 << pin));
@@ -249,8 +246,8 @@ void GPIO_setPIN(GPIO_portNameType portName, uint8 pin)
 		default:
 			break;
 	}
-
 }
+
 void GPIO_clearPIN(GPIO_portNameType portName, uint8 pin){
 	switch(portName){
 		case GPIO_A:
@@ -271,13 +268,9 @@ void GPIO_clearPIN(GPIO_portNameType portName, uint8 pin){
 		default:
 			break;
 	}
-
 }
 
-
-
 void GPIO_tooglePIN(GPIO_portNameType portName, uint8 pin){
-
 	switch(portName){
 	case GPIO_A:
 		GPIOA->PTOR = (0x1 << pin);
@@ -297,13 +290,9 @@ void GPIO_tooglePIN(GPIO_portNameType portName, uint8 pin){
 	default:
 		break;
 	}
-
-
 }
+
 void GPIO_dataDirectionPORT(GPIO_portNameType portName ,uint32 direction){
-
-
-
 	switch(portName){
 		case GPIO_A:
 			GPIOA->PDDR = direction;
@@ -322,10 +311,8 @@ void GPIO_dataDirectionPORT(GPIO_portNameType portName ,uint32 direction){
 			break;
 		default:
 			break;
-
 	}
 }
-
 
 void GPIO_dataDirectionPIN(GPIO_portNameType portName, uint8 State, uint8 pin){
 	switch(portName){
@@ -366,10 +353,5 @@ void GPIO_dataDirectionPIN(GPIO_portNameType portName, uint8 State, uint8 pin){
 				break;
 			default:
 				break;
-
 		}
-
-
 }
-
-

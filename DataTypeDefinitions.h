@@ -66,5 +66,4 @@ typedef float ufloat32;
 
 
 
-
 #endif /* DATATYPEDEFINITIONS_H_ */

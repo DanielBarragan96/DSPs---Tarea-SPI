@@ -8,7 +8,7 @@
 		DC-PTD3
 		DIN-PTD2
 		CLK-PTD1
-	\author J. Luis Pizano Escalante, luispizano@iteso.mx
+	\author Daniel barragan & Alex Ávila
 	\date	1/08/2015
 	\todo
 	    The SPI device driver needs to be completed.
@@ -107,32 +107,110 @@ typedef struct
 } SPI_ConfigType;
 
 
-/*it enable the clock module of the SPI by modifying the MDIS bits*/
+/********************************************************************************************/
+/********************************************************************************************/
+/********************************************************************************************/
+/*!
+ 	 \brief	 It enables the clock module of the SPI by modifying the MDIS bits
+ 	 \return void
+ */
 static void SPI_enable(SPI_ChannelType channel);
-/*It activate the clock gating*/
+/********************************************************************************************/
+/********************************************************************************************/
+/********************************************************************************************/
+/*!
+ 	 \brief	 It activates the clock gating
+ 	 \return void
+ */
 static void SPI_clk(SPI_ChannelType channel);
-/*It configure the SPI as a master or slave depending on the value of masterOrslave*/
+/********************************************************************************************/
+/********************************************************************************************/
+/********************************************************************************************/
+/*!
+ 	 \brief	 It configure the SPI as a master or slave depending on the value of masterOrslave
+ 	 \return void
+ */
 static void SPI_setMaster(SPI_ChannelType channel, SPI_MasterType masterOrSlave);
-/*It activate the TX and RX FIFOs of the SPI depending on the value of enableOrdisable*/
+/********************************************************************************************/
+/********************************************************************************************/
+/********************************************************************************************/
+/*!
+ 	 \brief	It activate the TX and RX FIFOs of the SPI depending on the value of enableOrdisable
+ 	 \return void
+ */
 static void SPI_fIFO(SPI_ChannelType channel, SPI_EnableFIFOType enableOrDisable);
-/*It selects the clock polarity depending on the value of cpol*/
+/********************************************************************************************/
+/********************************************************************************************/
+/********************************************************************************************/
+/*!
+ 	 \brief	It selects the clock polarity depending on the value of cpol
+ 	 \return void
+ */
 static void SPI_clockPolarity(SPI_ChannelType channel, SPI_PolarityType cpol);
-/*It selects the frame size depending on the value of frameSize and the macros that are defined above*/
+/********************************************************************************************/
+/********************************************************************************************/
+/********************************************************************************************/
+/*!
+ 	 \brief	It selects the frame size depending on the value of frameSize and the macros that are defined above
+ 	 \return void
+ */
 static void SPI_frameSize(SPI_ChannelType channel, uint32 frameSize);
-/*It selects the clock phase depending on the value of cpha*/
+/********************************************************************************************/
+/********************************************************************************************/
+/********************************************************************************************/
+/*!
+ 	 \brief	It selects the clock phase depending on the value of cpha
+ 	 \return void
+ */
 static void SPI_clockPhase(SPI_ChannelType channel, SPI_PhaseType cpha);
-/*It selects the baud rate depending on the value of baudRate and the macros that are defined above*/
+/********************************************************************************************/
+/********************************************************************************************/
+/********************************************************************************************/
+/*!
+ 	 \brief	It selects the baud rate depending on the value of baudRate and the macros that are defined above
+ 	 \return void
+ */
 static void SPI_baudRate(SPI_ChannelType channel, uint32 baudRate);
-/*It selects if MSB or LSM bits is first transmitted*/
+/********************************************************************************************/
+/********************************************************************************************/
+/********************************************************************************************/
+/*!
+ 	 \brief	It selects if MSB or LSM bits is first transmitted
+ 	 \return void
+ */
 static void SPI_mSBFirst(SPI_ChannelType channel, SPI_LSMorMSBType msb);
-/*It stars the SPI transmission by modifying the value of HALT bit*/
+/********************************************************************************************/
+/********************************************************************************************/
+/********************************************************************************************/
+/*!
+ 	 \brief	It stars the SPI transmission by modifying the value of HALT bit
+ 	 \return void
+ */
 void SPI_startTranference(SPI_ChannelType channel);
-/*It stops the SPI transmission by modifying the value of HALT bit*/
+/********************************************************************************************/
+/********************************************************************************************/
+/********************************************************************************************/
+/*!
+ 	 \brief	It stops the SPI transmission by modifying the value of HALT bit
+ 	 \return void
+ */
 void SPI_stopTranference(SPI_ChannelType channel);
-/*It transmits the information contained in data*/
+/********************************************************************************************/
+/********************************************************************************************/
+/********************************************************************************************/
+/*!
+ 	 \brief	It transmits the information contained in data
+ 	 \return void
+ */
 void SPI_sendOneByte(uint8 Data);
-/*It configures the SPI for transmission, this function as arguments receives a pointer to a constant structure where are all 
- * the configuration parameters*/
+/********************************************************************************************/
+/********************************************************************************************/
+/********************************************************************************************/
+/*!
+ 	 \brief	It configures the SPI for transmission, this function as arguments receives a pointer to a constant structure
+ 	 	    where are all the configuration parameters
+ 	 \return void
+ */
 void SPI_init(const SPI_ConfigType* config);
 
 

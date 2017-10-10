@@ -2,17 +2,15 @@
  * PIT.h
  *
  *  Created on: 16/08/2017
- *      Author: jlpe
+ *      Author: Daniel Barragan & Alex Ávila
  */
 
 #ifndef PIT_H_
 #define PIT_H_
 
 #include "DataTypeDefinitions.h"
+#include "MK64F12.h"
 
-static uint8 PIT_INTR_FLAG = FALSE;
-
-#define PIT_CLOCK_GATING 0x800000
 
 
 /*! This enumerated constant are used to select the PIT to be used*/
@@ -37,7 +35,6 @@ void PIT_IRQHandler(void);
  	 It is important to note that this strictly is not device driver since everything is
  	 contained in a single function, but in general you have to avoid this practices, this only
  	 for the propose of the homework
-
  	 \param[in]  pitTimer is the enumerated constant of PIT to be used.
  	 \param[in] systemClock is one of the required values to calculate the LDVAL trigger.
  	 \param[in] period one of the required values to calculate the LDVAL trigger.
@@ -66,7 +63,7 @@ uint8 PIT_interruptFlagStatus(void);
  	 is in use.
  	 \return PIT_INTR_FLAG;
  */
-uint8 PIT_getIntrStutus(void);
+uint8 PIT_getIntrStutus(PIT_Timer_t pitTimer);
 /********************************************************************************************/
 /********************************************************************************************/
 /********************************************************************************************/
@@ -77,6 +74,17 @@ uint8 PIT_getIntrStutus(void);
  	 \return void
  */
 void PIT_clear(PIT_Timer_t pitTimer);
+
+/********************************************************************************************/
+/********************************************************************************************/
+/********************************************************************************************/
+/*!
+ 	 \brief	 This function is used to stop the PIT.
+
+ 	  \param[in] pitTimer is the enumerated constant of PIT to stop.
+ 	 \return void
+ */
+void PIT_stop(PIT_Timer_t pitTimer);
 
 
 #endif /* PIT_H_ */
