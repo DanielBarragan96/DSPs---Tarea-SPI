@@ -15,7 +15,6 @@
  */
 
  
-#include "SPI.h"
 #include "GPIO.h"
 #include "DatatypeDefinitions.h"
 #include "LCDNokia5110.h"
@@ -34,7 +33,7 @@ const SPI_ConfigType SPI_Config={SPI_DISABLE_FIFO,
 							GPIO_MUX2,
 							SPI_BAUD_RATE_2,
 							SPI_FSIZE_8,
-							{GPIOD,BIT1,BIT2}};
+							{GPIO_D,BIT1,BIT2}};
 /*! This array hold the initial picture that is shown in the LCD*/
 extern const uint8 ITESO[504];
 

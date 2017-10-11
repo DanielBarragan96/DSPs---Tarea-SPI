@@ -202,7 +202,7 @@ void SPI_stopTranference(SPI_ChannelType channel);
  	 \brief	It transmits the information contained in data
  	 \return void
  */
-void SPI_sendOneByte(uint8 Data);
+void SPI_sendOneByte(SPI_ChannelType channel, uint8 Data);
 /********************************************************************************************/
 /********************************************************************************************/
 /********************************************************************************************/
