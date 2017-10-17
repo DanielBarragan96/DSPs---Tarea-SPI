@@ -1,11 +1,9 @@
-#include "MK64F12.h"
+
 #include "GPIO.h"
 #include "DatatypeDefinitions.h"
-#include "LCDNokia5110.h"
-#include "LCDNokia5110Images.h"
-#include "delay.h"
 #include "SPI.h"
 
+//depending on which spi you only enable bit 14 of the Module Configuration Register
 static void SPI_enable(SPI_ChannelType channel)
 {
 	switch(channel)
@@ -20,10 +18,11 @@ static void SPI_enable(SPI_ChannelType channel)
 		SPI2->MCR &= ~(SPI_MCR_MDIS_MASK);
 		break;
 	default:
-		break;
+		return;
 	}
 }
 
+//Enables the clock gating depending on the SPI you want to use
 static void SPI_clk(SPI_ChannelType channel)
 {
 	switch(channel)
@@ -38,10 +37,11 @@ static void SPI_clk(SPI_ChannelType channel)
 		SIM->SCGC3 |= SPI2_CLOCK_GATING;
 		break;
 	default:
-		break;
+		return;
 	}
 }
 
+//if you want to configure the SPI as slave we assign a 0 if master we assign 1 bit 31 of the MCR
 static void SPI_setMaster(SPI_ChannelType channel, SPI_MasterType masterOrSlave)
 {
 	switch(channel)
@@ -68,10 +68,11 @@ static void SPI_setMaster(SPI_ChannelType channel, SPI_MasterType masterOrSlave)
 			SPI2->MCR |= SPI_MCR_MSTR_MASK;
 		break;
 	default:
-		break;
+		return;
 	}
 }
 
+//to enable fifo we assign a 0 to disable we assign a 1, bit 13 TX, bit 12 RX
 static void SPI_fIFO(SPI_ChannelType channel, SPI_EnableFIFOType enableOrDisable)
 {
 	switch(channel)
@@ -79,37 +80,38 @@ static void SPI_fIFO(SPI_ChannelType channel, SPI_EnableFIFOType enableOrDisable
 	case SPI_0:
 		if(SPI_ENABLE_FIFO == enableOrDisable)
 		{
-			SPI0->MCR &= ~(SPI_MCR_DIS_RXF_MASK);
 			SPI0->MCR &= ~(SPI_MCR_DIS_TXF_MASK);
+			SPI0->MCR &= ~(SPI_MCR_DIS_RXF_MASK);
 		}else{
-			SPI0->MCR |= SPI_MCR_DIS_RXF_MASK;
 			SPI0->MCR |= SPI_MCR_DIS_TXF_MASK;
+			SPI0->MCR |= SPI_MCR_DIS_RXF_MASK;
 		}
 		break;
 	case SPI_1:
 		if(SPI_ENABLE_FIFO == enableOrDisable)
 		{
-			SPI1->MCR &= ~(SPI_MCR_DIS_RXF_MASK);
 			SPI1->MCR &= ~(SPI_MCR_DIS_TXF_MASK);
+			SPI1->MCR &= ~(SPI_MCR_DIS_RXF_MASK);
 		}else{
-			SPI1->MCR |= SPI_MCR_DIS_RXF_MASK;
 			SPI1->MCR |= SPI_MCR_DIS_TXF_MASK;
+			SPI1->MCR |= SPI_MCR_DIS_RXF_MASK;
 		}
 		break;
 	case SPI_2:
 		if(SPI_ENABLE_FIFO == enableOrDisable)
 		{
-			SPI2->MCR &= ~(SPI_MCR_DIS_RXF_MASK);
 			SPI2->MCR &= ~(SPI_MCR_DIS_TXF_MASK);
+			SPI2->MCR &= ~(SPI_MCR_DIS_RXF_MASK);
 		}else{
-			SPI2->MCR |= SPI_MCR_DIS_RXF_MASK;
 			SPI2->MCR |= SPI_MCR_DIS_TXF_MASK;
+			SPI2->MCR |= SPI_MCR_DIS_RXF_MASK;
 		}
 	default:
-		break;
+		return;
 	}
 }
 
+//if we want low polarity we write 0 to the bit 26
 static void SPI_clockPolarity(SPI_ChannelType channel, SPI_PolarityType cpol)
 {
 	switch(channel)
@@ -150,10 +152,11 @@ static void SPI_clockPolarity(SPI_ChannelType channel, SPI_PolarityType cpol)
 			SPI2->CTAR_SLAVE[0] |= SPI_CTAR_CPOL_MASK;
 		}
 	default:
-		break;
+		return;
 	}
 }
 
+//cleans the value of the bits and sets the wanted ones.
 static void SPI_frameSize(SPI_ChannelType channel, uint32 frameSize)
 {
 	switch(channel)
@@ -163,7 +166,7 @@ static void SPI_frameSize(SPI_ChannelType channel, uint32 frameSize)
 		SPI0->CTAR[0] |= frameSize;
 		SPI0->CTAR[1] &= ~(SPI_CTAR_FMSZ_MASK);
 		SPI0->CTAR[1] |= frameSize;
-		SPI0->CTAR_SLAVE[0] &= ~(SPI_CTAR_FMSZ_MASK);
+		SPI0->CTAR_SLAVE[0] &= ~(SPI_CTAR_SLAVE_FMSZ_MASK);
 		SPI0->CTAR_SLAVE[0] |= frameSize;
 		break;
 	case SPI_1:
@@ -171,7 +174,7 @@ static void SPI_frameSize(SPI_ChannelType channel, uint32 frameSize)
 		SPI1->CTAR[0] |= frameSize;
 		SPI1->CTAR[1] &= ~(SPI_CTAR_FMSZ_MASK);
 		SPI1->CTAR[1] |= frameSize;
-		SPI1->CTAR_SLAVE[0] &= ~(SPI_CTAR_FMSZ_MASK);
+		SPI1->CTAR_SLAVE[0] &= ~(SPI_CTAR_SLAVE_FMSZ_MASK);
 		SPI1->CTAR_SLAVE[0] |= frameSize;
 		break;
 	case SPI_2:
@@ -179,14 +182,15 @@ static void SPI_frameSize(SPI_ChannelType channel, uint32 frameSize)
 		SPI2->CTAR[0] |= frameSize;
 		SPI2->CTAR[1] &= ~(SPI_CTAR_FMSZ_MASK);
 		SPI2->CTAR[1] |= frameSize;
-		SPI2->CTAR_SLAVE[0] &= ~(SPI_CTAR_FMSZ_MASK);
+		SPI2->CTAR_SLAVE[0] &= ~(SPI_CTAR_SLAVE_FMSZ_MASK);
 		SPI2->CTAR_SLAVE[0] |= frameSize;
 		break;
 	default:
-		break;
+		return;
 	}
 }
 
+//we write a 0 for low phase in bit 25
 static void SPI_clockPhase(SPI_ChannelType channel, SPI_PhaseType cpha)
 {
 	switch(channel)
@@ -228,18 +232,19 @@ static void SPI_clockPhase(SPI_ChannelType channel, SPI_PhaseType cpha)
 		}
 		break;
 	default:
-		break;
+		return;
 	}
 }
 
+//erases the value and writes the wanted baudrate in the first bits
 static void SPI_baudRate(SPI_ChannelType channel, uint32 baudRate)
 {
 	switch(channel)
 	{
 	case SPI_0:
 		SPI0->CTAR[0] &= ~(SPI_CTAR_BR_MASK);
-		SPI0->CTAR[0] |= baudRate;
 		SPI0->CTAR[1] &= ~(SPI_CTAR_BR_MASK);
+		SPI0->CTAR[0] |= baudRate;
 		SPI0->CTAR[1] |= baudRate;
 		break;
 	case SPI_1:
@@ -249,16 +254,17 @@ static void SPI_baudRate(SPI_ChannelType channel, uint32 baudRate)
 		SPI1->CTAR[1] |= baudRate;
 		break;
 	case SPI_2:
-		SPI2->CTAR[0] &= ~(SPI_CTAR_FMSZ_MASK);
+		SPI2->CTAR[0] &= ~(SPI_CTAR_BR_MASK);
 		SPI2->CTAR[0] |= baudRate;
-		SPI2->CTAR[1] &= ~(SPI_CTAR_FMSZ_MASK);
+		SPI2->CTAR[1] &= ~(SPI_CTAR_BR_MASK);
 		SPI2->CTAR[1] |= baudRate;
 		break;
 	default:
-		break;
+		return;
 	}
 }
 
+//For MSB we write a 0 in the bit 24 of the clock and transfer attributes register
 static void SPI_mSBFirst(SPI_ChannelType channel, SPI_LSMorMSBType msb)
 {
 	switch(channel)
@@ -268,11 +274,11 @@ static void SPI_mSBFirst(SPI_ChannelType channel, SPI_LSMorMSBType msb)
 		{
 			SPI0->CTAR[0] &= ~(SPI_CTAR_LSBFE_MASK);
 			SPI0->CTAR[1] &= ~(SPI_CTAR_LSBFE_MASK);
-			SPI0->CTAR_SLAVE[0] &= ~(SPI_CTAR_LSBFE_MASK);
+			//SPI0->CTAR_SLAVE[0] &= ~(SPI_CTAR_LSBFE_MASK);
 		}else{
 			SPI0->CTAR[0] |= SPI_CTAR_LSBFE_MASK;
 			SPI0->CTAR[1] |= SPI_CTAR_LSBFE_MASK;
-			SPI0->CTAR_SLAVE[0] |= SPI_CTAR_LSBFE_MASK;
+			//SPI0->CTAR_SLAVE[0] |= SPI_CTAR_LSBFE_MASK;
 		}
 		break;
 	case SPI_1:
@@ -299,10 +305,11 @@ static void SPI_mSBFirst(SPI_ChannelType channel, SPI_LSMorMSBType msb)
 			SPI2->CTAR_SLAVE[0] |= SPI_CTAR_LSBFE_MASK;
 		}
 	default:
-		break;
+		return;
 	}
 }
 
+//to start transfer we write a 0 on the halt of the mcr
 void SPI_startTranference(SPI_ChannelType channel)
 {
 	switch(channel)
@@ -317,10 +324,11 @@ void SPI_startTranference(SPI_ChannelType channel)
 		SPI2->MCR &= ~(SPI_MCR_HALT_MASK);
 		break;
 	default:
-		break;
+		return;
 	}
 }
 
+//to stop transfer we write a 1 on the halt of the mcr
 void SPI_stopTranference(SPI_ChannelType channel)
 {
 	switch(channel)
@@ -335,56 +343,57 @@ void SPI_stopTranference(SPI_ChannelType channel)
 		SPI2->MCR |= SPI_MCR_HALT_MASK;
 		break;
 	default:
-		break;
+		return;
 	}
 }
+
 
 void SPI_sendOneByte(SPI_ChannelType channel, uint8 Data)
 {
 	switch(channel)
 	{
 	case SPI_0:
-		SPI0->PUSHR = (Data);
-		while(0 == (SPI0->SR & SPI_SR_TCF_MASK))
+		SPI0->PUSHR = Data;
+		while(0 == (SPI0->SR & SPI_SR_TCF_MASK));
 		SPI0->SR |= SPI_SR_TCF_MASK;
 		break;
 	case SPI_1:
-		SPI1->PUSHR = (Data);
-		while(0 == (SPI1->SR & SPI_SR_TCF_MASK))
+		SPI1->PUSHR = Data;
+		while(0 == (SPI1->SR & SPI_SR_TCF_MASK));
 		SPI1->SR |= SPI_SR_TCF_MASK;
 		break;
 	case SPI_2:
-		SPI2->PUSHR = (Data);
-		while(0 == (SPI2->SR & SPI_SR_TCF_MASK))
+		SPI2->PUSHR = Data;
+		while(0 == (SPI2->SR & SPI_SR_TCF_MASK));
 		SPI2->SR |= SPI_SR_TCF_MASK;
 		break;
 	default:
-		break;
+		return;
 	}
 }
 
-void SPI_init(const SPI_ConfigType* config)
+void SPI_init(const SPI_ConfigType* configure)
 {
 	//start clock gate
-	SPI_clk(config->SPI_Channel);
-	//GPIO init
-	GPIO_clockGating(config->GPIOForSPI.GPIO_portName);
-	GPIO_pinControlRegister(config->GPIOForSPI.GPIO_portName,config->GPIOForSPI.SPI_clk , &(config->pinConttrolRegisterPORTD));
-	GPIO_pinControlRegister(config->GPIOForSPI.GPIO_portName,config->GPIOForSPI.SPI_Sout , &(config->pinConttrolRegisterPORTD));
-	//Select mode as master or slave
-	SPI_setMaster(config->SPI_Channel, config->SPI_Master);
-	//Activate or deactivate the fifo of the spi
-	SPI_fIFO(config->SPI_Channel, config->SPI_EnableFIFO);
+	SPI_clk(configure->SPI_Channel);
 	//enables spi
-	SPI_enable(config->SPI_Channel);
+	SPI_enable(configure->SPI_Channel);
+	//Select mode as master or slave
+	SPI_setMaster(configure->SPI_Channel, configure->SPI_Master);
+	//Activate or deactivate the fifo of the spi
+	SPI_fIFO(configure->SPI_Channel, configure->SPI_EnableFIFO);
 	//select the polarity of the spi
-	SPI_clockPolarity(config->SPI_Channel, config->SPI_Polarity);
+	SPI_clockPolarity(configure->SPI_Channel, configure->SPI_Polarity);
 	//select the framesize of the spi
-	SPI_frameSize(config->SPI_Channel, config->frameSize);
+	SPI_frameSize(configure->SPI_Channel, configure->frameSize);
 	//Select the clock phase of the spi
-	SPI_clockPhase(config->SPI_Channel, config->SPI_Phase);
+	SPI_clockPhase(configure->SPI_Channel, configure->SPI_Phase);
 	//Selects the baud rate of the SPI
-	SPI_baudRate(config->SPI_Channel, config->baudrate);
+	SPI_baudRate(configure->SPI_Channel, configure->baudrate);
 	//LSB or MSB type of transference is selected
-	SPI_mSBFirst(config->SPI_Channel, SPI_MSB);
+	SPI_mSBFirst(configure->SPI_Channel, configure->SPI_LSMorMSB);
+	//GPIO init
+	GPIO_clockGating(configure->GPIOForSPI.GPIO_portName);
+	GPIO_pinControlRegister(configure->GPIOForSPI.GPIO_portName,configure->GPIOForSPI.SPI_Sout , &configure->pinConttrolRegisterPORTD);
+	GPIO_pinControlRegister(configure->GPIOForSPI.GPIO_portName,configure->GPIOForSPI.SPI_clk , &configure->pinConttrolRegisterPORTD);
 }

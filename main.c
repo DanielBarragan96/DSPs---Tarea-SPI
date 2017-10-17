@@ -15,11 +15,12 @@
  */
 
  
+#include "SPI.h"
 #include "GPIO.h"
 #include "DatatypeDefinitions.h"
 #include "LCDNokia5110.h"
 #include "LCDNokia5110Images.h"
-#include "delay.h"
+#include "GlobalFunctions.h"
 #include "SPI.h"
 
 /** \brief This is the configuration structure to configure the LCD.
@@ -47,22 +48,23 @@ int main(void)
 		for(;;) {	  
 			LCDNokia_clear();/*! It clears the information printed in the LCD*/
 			LCDNokia_bitmap(&ITESO[0]); /*! It prints an array that hold an image, in this case is the initial picture*/
-			delay_cycles(65000);
+			delay(65000);
 			LCDNokia_clear();
-			delay_cycles(65000);
+			delay(65000);
      		LCDNokia_clear();
      		LCDNokia_gotoXY(25,0); /*! It establishes the position to print the messages in the LCD*/
 			LCDNokia_sendString(string1); /*! It print a string stored in an array*/
-			delay_cycles(65000);
+			delay(65000);
      		LCDNokia_gotoXY(10,1);
 			LCDNokia_sendString(string2); /*! It print a string stored in an array*/
-			delay_cycles(65000);
+			delay(65000);
 			LCDNokia_gotoXY(25,2);
 			LCDNokia_sendChar('2'); /*! It prints a character*/
 			LCDNokia_sendChar('0'); /*! It prints a character*/
 			LCDNokia_sendChar('1'); /*! It prints a character*/
 			LCDNokia_sendChar('5'); /*! It prints a character*/
-			delay_cycles(65000);
+			delay(65000);
+			delay(130000);
 
 		}
 	
