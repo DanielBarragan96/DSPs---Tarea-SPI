@@ -227,47 +227,47 @@ uint8 GPIO_readPIN(GPIO_portNameType portName, uint8 pin){
 }
 
 void GPIO_setPIN(GPIO_portNameType portName, uint8 pin){
-	switch(portName){
-		case GPIO_A:
-		GPIOA->PSOR = (GPIOA->PDOR | (0x1 << pin));
-			break;
-		case GPIO_B:
-			GPIOB->PSOR = (GPIOB->PDOR | (0x1 << pin));
-			break;
-		case GPIO_C:
-			GPIOC->PSOR = (GPIOC->PDOR | (0x1 << pin));
-			break;
-		case GPIO_D:
-			GPIOD->PSOR = (GPIOD->PDOR | (0x1 << pin));
-			break;
-		case GPIO_E:
-			GPIOE->PSOR = (GPIOE->PDOR | (0x1 << pin));
-			break;
-		default:
-			break;
-	}
+	uint32 mask=0;
+		mask = ((1)<<(pin));
+		switch(portName)
+			{
+				case GPIO_A:
+					GPIOA->PSOR = mask;
+					break;
+				case GPIO_B:
+					GPIOB->PSOR = mask;
+					break;
+				case GPIO_C:
+					GPIOC->PSOR = mask;
+					break;
+				case GPIO_D:
+					GPIOD->PSOR = mask;
+					break;
+				default:
+					GPIOE->PSOR = mask;
+			}
 }
 
 void GPIO_clearPIN(GPIO_portNameType portName, uint8 pin){
-	switch(portName){
-		case GPIO_A:
-		GPIOA->PCOR = (GPIOA->PDOR | (0x1 << pin));
-			break;
-		case GPIO_B:
-			GPIOB->PCOR = (GPIOB->PDOR | (0x1 << pin));
-			break;
-		case GPIO_C:
-			GPIOC->PCOR = (GPIOC->PDOR | (0x1 << pin));
-			break;
-		case GPIO_D:
-			GPIOD->PCOR = (GPIOD->PDOR | (0x1 << pin));
-			break;
-		case GPIO_E:
-			GPIOE->PCOR = (GPIOE->PDOR | (0x1 << pin));
-			break;
-		default:
-			break;
-	}
+	uint32 mask=0;
+		mask = ((1)<<(pin));
+		switch(portName)
+			{
+				case GPIO_A:
+					GPIOA->PCOR = mask;
+					break;
+				case GPIO_B:
+					GPIOB->PCOR = mask;
+					break;
+				case GPIO_C:
+					GPIOC->PCOR = mask;
+					break;
+				case GPIO_D:
+					GPIOD->PCOR = mask;
+					break;
+				default:
+					GPIOE->PCOR = mask;
+			}
 }
 
 void GPIO_tooglePIN(GPIO_portNameType portName, uint8 pin){
